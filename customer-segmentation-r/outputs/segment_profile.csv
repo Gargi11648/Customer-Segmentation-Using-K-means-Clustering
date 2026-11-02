@@ -1,0 +1,6 @@
+Cluster,Customers,Avg_Age,Avg_Income,Avg_Spending,Segment
+1,47,42.6,89.9,16.3,"Careful Wealthy (High income, Low spend)"
+2,39,31.4,85.5,81.8,"Premium Spenders (High income, High spend)"
+3,34,49.9,27.7,19.9,"Low-Value Savers (Low income, Low spend)"
+4,40,42,54.7,47.8,Standard / Average Customers
+5,40,25,26,74,"Budget Enthusiasts (Low income, High spend)"

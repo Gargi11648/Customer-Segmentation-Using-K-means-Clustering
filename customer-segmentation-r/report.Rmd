@@ -1,0 +1,75 @@
+---
+title: "Customer Segmentation using K-Means Clustering in R"
+author: "Gargi Kumari (UID: 26MCD10102)"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5)
+library(tidyverse); library(cluster); library(factoextra); library(corrplot)
+source("R/helpers.R")
+```
+
+# 1. Introduction
+Customer segmentation divides customers into groups with similar behaviour so that a business can target each group with suitable marketing. This project applies **K-Means clustering** in **R** to mall customer data.
+
+# 2. Objectives
+- Explore the customer data.
+- Find the best number of clusters.
+- Build and profile customer segments.
+- Suggest marketing strategies and build an interactive Shiny dashboard.
+
+# 3. Dataset
+```{r data}
+df <- load_data()
+glimpse(df)
+summary(df)
+colSums(is.na(df))
+```
+
+# 4. Exploratory Data Analysis
+```{r eda}
+ggplot(df, aes(Age, fill = Gender)) + geom_histogram(bins = 15, colour = "white", position = "dodge") + theme_minimal()
+ggplot(df, aes(Income, Spending, colour = Gender)) + geom_point(size = 2) + theme_minimal()
+corrplot(cor(df[, c("Age", "Income", "Spending")]), method = "color", addCoef.col = "black")
+```
+
+# 5. Choosing K
+```{r k}
+scaled <- scale(df[, c("Age", "Income", "Spending")])
+set.seed(123)
+fviz_nbclust(scaled, kmeans, method = "wss", k.max = 10)
+fviz_nbclust(scaled, kmeans, method = "silhouette", k.max = 10)
+```
+
+# 6. K-Means Clustering
+```{r km}
+res <- run_kmeans(df, k = 5)
+fviz_cluster(res$model, data = scaled, geom = "point", ellipse.type = "convex", ggtheme = theme_minimal())
+```
+
+# 7. Segment Profile
+```{r profile}
+knitr::kable(res$profile)
+ggplot(res$data, aes(Income, Spending, colour = Segment)) + geom_point(size = 2) + theme_minimal() + theme(legend.position = "bottom")
+```
+
+# 8. Business Recommendations
+| Segment | Strategy |
+|---|---|
+| Premium Spenders | Loyalty programme, early access, premium offers |
+| Careful Wealthy | Quality-focused personalised campaigns |
+| Budget Enthusiasts | Discounts, coupons, EMI and festival sales |
+| Low-Value Savers | Low-cost promotions only |
+| Standard Customers | Seasonal offers, cross-selling |
+
+# 9. Conclusion
+K-Means divided the customers into distinct, interpretable segments. The results help the business plan targeted marketing. **Future scope:** hierarchical clustering comparison, PCA, deployment of the Shiny app online.
+
+# 10. References
+- Kaggle: Mall Customer Segmentation Data
+- R Documentation: `stats::kmeans`, `factoextra`, `shiny`
